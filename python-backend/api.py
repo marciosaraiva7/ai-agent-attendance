@@ -84,10 +84,10 @@ class ChatResponse(BaseModel):
 
 class ConversationStore:
     def get(self, conversation_id: str) -> Optional[Dict[str, Any]]:
-        pass
+        raise NotImplementedError
 
     def save(self, conversation_id: str, state: Dict[str, Any]):
-        pass
+        raise NotImplementedError
 
 class InMemoryConversationStore(ConversationStore):
     _conversations: Dict[str, Dict[str, Any]] = {}
