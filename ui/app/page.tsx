@@ -20,7 +20,19 @@ export default function Home() {
   // Boot the conversation
   useEffect(() => {
     (async () => {
-      const data = await callChatAPI("", conversationId ?? "");
+      const { data, error: err } = await callChatAPI("", conversationId ?? "");
+      if (!data) {
+        console.error("Error booting conversation", err);
+        setMessages([
+          {
+            id: Date.now().toString() + Math.random().toString(),
+            content: err ?? "Error contacting server.",
+            role: "assistant",
+            timestamp: new Date(),
+          },
+        ]);
+        return;
+      }
       setConversationId(data.conversation_id);
       setCurrentAgent(data.current_agent);
       setContext(data.context);
@@ -57,7 +69,21 @@ export default function Home() {
     setMessages((prev) => [...prev, userMsg]);
     setIsLoading(true);
 
-    const data = await callChatAPI(content, conversationId ?? "");
+    const { data, error: err } = await callChatAPI(content, conversationId ?? "");
+    if (!data) {
+      console.error("Error sending message", err);
+      setIsLoading(false);
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: Date.now().toString() + Math.random().toString(),
+          content: err ?? "Error contacting server.",
+          role: "assistant",
+          timestamp: new Date(),
+        },
+      ]);
+      return;
+    }
 
     if (!conversationId) setConversationId(data.conversation_id);
     setCurrentAgent(data.current_agent);
